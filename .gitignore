@@ -163,7 +163,7 @@ cython_debug/
 /.idea/helper_in_prayer.iml
 /.idea/misc.xml
 /.idea/modules.xml
-/my_db.db
+/data/my_db.db
 /plan/plan_handler.py
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml

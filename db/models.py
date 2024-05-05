@@ -1,6 +1,6 @@
 from peewee import *
 
-db = SqliteDatabase('my_db.db')
+db = SqliteDatabase('data/my_db.db')
 
 
 def db_init() -> None:

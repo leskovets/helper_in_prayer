@@ -1,17 +1,32 @@
 import asyncio
 import logging
+import os
+
+from aiogram import Dispatcher, Bot
+from dotenv import load_dotenv
+from aiogram.types import BotCommand
 
 from db.models import db_init
 from plan.plan_handler import check_reminders, check_pray, restart_reminder_status, check_lost_pray
 from bot.routers import router as main_router
-from bot.bot_init import bot_init
 
 
 async def main() -> None:
     logging.basicConfig(level=logging.INFO)
 
     db_init()
-    bot, dp = await bot_init()
+
+    load_dotenv('.env')
+
+    token = os.getenv('API_TOKEN')
+    bot = Bot(token)
+    await bot.set_my_commands([
+        BotCommand(command='help', description='Помощь'),
+        BotCommand(command='reminder', description='Напоминания'),
+        BotCommand(command='story', description='История молитв'),
+
+    ])
+    dp = Dispatcher()
 
     dp.include_router(main_router)
 

@@ -7,7 +7,6 @@ from bot.routers import router as main_router
 from bot.bot_init import bot_init
 
 
-
 async def main() -> None:
     logging.basicConfig(level=logging.INFO)
 

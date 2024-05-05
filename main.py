@@ -7,8 +7,9 @@ from bot.routers import router as main_router
 from bot.bot_init import bot_init
 
 
+
 async def main() -> None:
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     db_init()
     bot, dp = await bot_init()

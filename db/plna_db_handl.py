@@ -1,6 +1,10 @@
+import logging
+
 from datetime import datetime, timedelta
 
 from db.models import Plan
+
+db_plan_handler = logging.getLogger(name="db_handler")
 
 
 def add_new_plan(chat_id: int, type_plan: str, day: int, start_time: datetime.time) -> None:
@@ -8,13 +12,13 @@ def add_new_plan(chat_id: int, type_plan: str, day: int, start_time: datetime.ti
     if plan is not None:
         plan.time = start_time
         plan.save()
-        return
-
-    Plan.create(chat_id=chat_id,
-                type_plan=type_plan,
-                day=day,
-                time=start_time
-                )
+    else:
+        Plan.create(chat_id=chat_id,
+                    type_plan=type_plan,
+                    day=day,
+                    time=start_time
+                    )
+    db_plan_handler.debug(f"{chat_id} было обновлён план")
 
 
 def get_immediate_plans(type_plan: str) -> list:

@@ -5,7 +5,7 @@ from collections import Counter
 from aiogram import Bot
 
 from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false
-from db.story_db_handl import add_report_pray, get_reports_false_pray_last_week
+from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
 from db.user_db_handl import get_all_users
 from db.models import Story
 from bot.utils.send_message import prayer_reminder
@@ -52,10 +52,11 @@ async def check_pray(bot: Bot, await_time: int = 60 * 4) -> None:
             minutes=datetime.now().minute
         )
 
-        if timedelta(hours=23, minutes=55) < time_now:
+        if timedelta(hours=8, minutes=00) < time_now:
 
-            today_date = date.today().strftime("%d ")
-            today_date += months[date.today().strftime("%m")]
+            yesterday = date.today() - timedelta(days=1)
+            today_date = yesterday.strftime("%d ")
+            today_date += months[yesterday.strftime("%m")]
             users = get_all_users()
 
             for user in users:
@@ -104,7 +105,7 @@ async def check_lost_pray(bot: Bot, await_time: int = 60) -> None:
         week_day_now = datetime.weekday(datetime.now())
 
         if (timedelta(hours=9, minutes=0) < time_now) and week_day_now == 5:
-            story: list[Story] = get_reports_false_pray_last_week()
+            story: list[Story] = get_reports_lost_pray_last_week()
             users = Counter()
             for lost_day in story:
                 users[lost_day.chat_id] += 1

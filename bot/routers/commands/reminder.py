@@ -39,17 +39,13 @@ async def is_reminder(message: Message, state: FSMContext):
 
 @router.message(Reminder.plan)
 async def plan(message: Message, state: FSMContext):
-    if not message.text:
-        text = 'Введи правильные значения'
-        await message.answer(text, reply_markup=ReplyKeyboardRemove())
-        return
     try:
         start_time = time(
             hour=int(message.text.split(':')[0]),
             minute=int(message.text.split(':')[1])
         )
-    except ValueError as e:
-        await message.answer('неправильный ввод', reply_markup=ReplyKeyboardRemove())
+    except (IndexError, ValueError) as e:
+        await message.answer('Введи время ЧЧ:ММ', reply_markup=ReplyKeyboardRemove())
         return
 
     for day in range(7):

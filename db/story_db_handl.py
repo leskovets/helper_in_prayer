@@ -17,7 +17,18 @@ def update_report_pray(chat_id: int, is_pray: bool, date_pray: date) -> None:
     story.save()
 
 
-def get_reports_false_pray_last_week() -> list[Story]:
+def get_reports_lost_pray_last_week_where_chat_id(chat_id: int) -> list[Story]:
+    week_ago = date.today() - timedelta(days=7)
+    story = Story.select().where(
+        (Story.is_pray == 0) &
+        (Story.date >= week_ago) &
+        (Story.date < date.today()) &
+        (Story.chat_id == chat_id)
+    )
+    return story
+
+
+def get_reports_lost_pray_last_week() -> list[Story]:
     week_ago = date.today() - timedelta(days=7)
     story = Story.select().where(
         (Story.is_pray == 0) &

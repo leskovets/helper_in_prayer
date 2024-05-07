@@ -19,6 +19,7 @@ class Report(StatesGroup):
 
 
 class Reminder(StatesGroup):
-    is_reminder = State()
+    reminder_on = State()
+    reminder_off = State()
     plan = State()
 

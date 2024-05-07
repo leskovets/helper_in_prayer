@@ -18,18 +18,34 @@ async def start(message: Message, state: FSMContext) -> None:
 
     if not get_user_is_reminder_by_chat_id(message.chat.id):
         await message.answer('У тебя не в включены напоминания. Включить?', reply_markup=yes_no_keyboard())
+        await state.update_data(is_reminder=True)
+    else:
+        text = 'Хочешь отключить напоминание?'
+        await message.answer(text, reply_markup=yes_no_keyboard())
+        await state.update_data(is_reminder=False)
 
-        await state.set_state(Reminder.is_reminder)
-        return
-    await message.answer('Введи время ЧЧ:ММ в котором планируешь молиться', reply_markup=ReplyKeyboardRemove())
-    await state.set_state(Reminder.plan)
+    await state.set_state(Reminder.reminder_on)
 
 
-@router.message(Reminder.is_reminder)
-async def is_reminder(message: Message, state: FSMContext):
-    if message.text not in ('Да', 'Нет'):
+@router.message(Reminder.reminder_on)
+async def is_reminder_(message: Message, state: FSMContext):
+    try:
+        if message.text not in ('Да', 'Нет'):
+            raise ValueError()
+    except ValueError as e:
         text = 'Нажми на кнопку!'
         await message.answer(text, reply_markup=yes_no_keyboard())
+        return
+
+    if message.text == 'Да':
+        is_reminder = await state.get_data()
+
+    if not is_reminder['is_reminder']:
+
+        text = 'Напоминания отключены!'
+        update_user_is_reminder_by_chat_id(message.chat.id, False)
+        await message.answer(text, reply_markup=ReplyKeyboardRemove())
+        await state.clear()
         return
 
     update_user_is_reminder_by_chat_id(message.chat.id, True)

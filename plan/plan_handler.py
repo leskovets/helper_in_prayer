@@ -25,7 +25,7 @@ async def check_reminders(bot: Bot, await_time: int = 60) -> None:
         await asyncio.sleep(await_time)
 
 
-async def check_pray(bot: Bot, await_time: int = 60 * 4) -> None:
+async def check_pray(bot: Bot, await_time: int = 60) -> None:
     """
     :param bot: bot
     :param await_time: time in seconds for awaiting
@@ -46,29 +46,29 @@ async def check_pray(bot: Bot, await_time: int = 60 * 4) -> None:
         "12": 'Декабря'
     }
     while True:
-
         time_now = timedelta(
             hours=datetime.now().hour,
             minutes=datetime.now().minute
         )
 
-        if timedelta(hours=8, minutes=00) < time_now:
+        await_time = 60 * 15
+        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=10, minutes=00):
 
             yesterday = date.today() - timedelta(days=1)
-            today_date = yesterday.strftime("%d ")
-            today_date += months[yesterday.strftime("%m")]
+            yesterday_date = yesterday.strftime("%d ")
+            yesterday_date += months[yesterday.strftime("%m")]
             users = get_all_users()
 
             for user in users:
-                add_report_pray(user.chat_id, False, date.today())
+                add_report_pray(user.chat_id, False, yesterday)
                 await bot.send_message(
                     user.chat_id,
-                    f'Помолился ли ты {today_date}?',
-                    reply_markup=is_pray_markup(date.today().strftime('%d %m %Y'))
+                    f'Помолился ли ты {yesterday_date}?',
+                    reply_markup=is_pray_markup(yesterday.strftime('%d %m %Y'))
                 )
 
-            # await = 23 hours and 50 min
-            await_time = (60 * 60 * 24) - 60 * 10
+            # await = 16h
+            await_time = 60 * 60 * 16
 
         await asyncio.sleep(await_time)
 
@@ -84,10 +84,11 @@ async def restart_reminder_status(await_time: int = 60 * 29) -> None:
         )
         week_day_now = datetime.weekday(datetime.now())
 
-        if (timedelta(hours=23, minutes=55) < time_now) and week_day_now == 6:
+        await_time = 60 * 15
+        if (timedelta(hours=0, minutes=00) < time_now) and week_day_now == 0:
             update_all_total_alarm_to_false()
-            # await = 6 day 23 hours and 30 min
-            await_time = (60 * 60 * 24 * 7) - (60 * 30)
+
+            await_time = 60 * 60 * 24 * 6
 
         await asyncio.sleep(await_time)
 
@@ -102,9 +103,10 @@ async def check_lost_pray(bot: Bot, await_time: int = 60) -> None:
             hours=datetime.now().hour,
             minutes=datetime.now().minute
         )
-        week_day_now = datetime.weekday(datetime.now())
 
-        if (timedelta(hours=9, minutes=0) < time_now) and week_day_now == 5:
+        await_time = 60 * 15
+
+        if timedelta(hours=8, minutes=0) < time_now:
             story: list[Story] = get_reports_lost_pray_last_week()
             users = Counter()
             for lost_day in story:
@@ -120,7 +122,7 @@ async def check_lost_pray(bot: Bot, await_time: int = 60) -> None:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
                 await bot.send_message(chat_id, text)
 
-            # await = 23 hours and 55 min
-            await_time = (60 * 60 * 24) - (60 * 5)
+            # await = 16 hours
+            await_time = 60 * 60 * 16
 
         await asyncio.sleep(await_time)

@@ -15,3 +15,4 @@ if __name__ == '__main__':
         migrator.drop_column('user', 'status'),
         migrator.drop_column('user', 'user_id'),
     )
+na

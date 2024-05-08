@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from bot.keyboards.keyboards.yes_no import yes_no_keyboard
 from bot.utils.states import Reminder
 from db.plna_db_handl import add_new_plan
-from db.user_db_handl import get_user_is_reminder_by_chat_id, update_user_is_reminder_by_chat_id
+from db.user_db_handl import check_reminder_by_chat_id, update_user_reminder_by_chat_id
 
 router = Router()
 
@@ -16,7 +16,7 @@ router = Router()
 @router.message(Command('reminder'))
 async def start(message: Message, state: FSMContext) -> None:
 
-    if not get_user_is_reminder_by_chat_id(message.chat.id):
+    if not check_reminder_by_chat_id(message.chat.id):
         await message.answer('У тебя не в включены напоминания. Включить?', reply_markup=yes_no_keyboard())
         await state.update_data(is_reminder=True)
     else:
@@ -32,23 +32,22 @@ async def is_reminder_(message: Message, state: FSMContext):
     try:
         if message.text not in ('Да', 'Нет'):
             raise ValueError()
-    except ValueError as e:
+    except ValueError:
         text = 'Нажми на кнопку!'
         await message.answer(text, reply_markup=yes_no_keyboard())
         return
 
-    if message.text == 'Да':
-        is_reminder = await state.get_data()
+    is_reminder = await state.get_data()
 
-    if not is_reminder['is_reminder']:
+    if is_reminder['is_reminder'] is False:
 
         text = 'Напоминания отключены!'
-        update_user_is_reminder_by_chat_id(message.chat.id, False)
+        update_user_reminder_by_chat_id(message.chat.id, False)
         await message.answer(text, reply_markup=ReplyKeyboardRemove())
         await state.clear()
         return
 
-    update_user_is_reminder_by_chat_id(message.chat.id, True)
+    update_user_reminder_by_chat_id(message.chat.id, True)
     await message.answer('Введи время ЧЧ:ММ в котором планируешь молиться', reply_markup=ReplyKeyboardRemove())
     await state.set_state(Reminder.plan)
 
@@ -60,7 +59,7 @@ async def plan(message: Message, state: FSMContext):
             hour=int(message.text.split(':')[0]),
             minute=int(message.text.split(':')[1])
         )
-    except (IndexError, ValueError) as e:
+    except (IndexError, ValueError):
         await message.answer('Введи время ЧЧ:ММ', reply_markup=ReplyKeyboardRemove())
         return
 
@@ -70,5 +69,3 @@ async def plan(message: Message, state: FSMContext):
     text = 'Время добавлено'
     await message.answer(text, reply_markup=ReplyKeyboardRemove())
     await state.clear()
-
-

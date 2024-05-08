@@ -19,13 +19,13 @@ class BaseModel(Model):
 
 class User(BaseModel):
 
-    user_id = IntegerField(unique=True)
     chat_id = IntegerField(unique=True)
     user_name = CharField(null=True)
     first_name = CharField(null=True)
-    phone = CharField(null=True)
-    status = CharField(null=True)
     is_reminders = BooleanField()
+    lieder = IntegerField(null=True)
+    admin = BooleanField(null=True)
+    archive = BooleanField(null=True)
 
 
 class Story(BaseModel):

@@ -6,7 +6,7 @@ from aiogram import Bot
 
 from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
-from db.user_db_handl import get_all_users
+from db.user_db_handl import get_users
 from db.models import Story
 from bot.utils.send_message import prayer_reminder
 from bot.keyboards.inline_keyboards.is_pray import is_pray_markup
@@ -25,10 +25,9 @@ async def check_reminders(bot: Bot, await_time: int = 60) -> None:
         await asyncio.sleep(await_time)
 
 
-async def check_pray(bot: Bot, await_time: int = 60) -> None:
+async def check_pray(bot: Bot) -> None:
     """
     :param bot: bot
-    :param await_time: time in seconds for awaiting
     """
 
     months = {
@@ -57,7 +56,7 @@ async def check_pray(bot: Bot, await_time: int = 60) -> None:
             yesterday = date.today() - timedelta(days=1)
             yesterday_date = yesterday.strftime("%d ")
             yesterday_date += months[yesterday.strftime("%m")]
-            users = get_all_users()
+            users = get_users()
 
             for user in users:
                 add_report_pray(user.chat_id, False, yesterday)
@@ -73,7 +72,7 @@ async def check_pray(bot: Bot, await_time: int = 60) -> None:
         await asyncio.sleep(await_time)
 
 
-async def restart_reminder_status(await_time: int = 60 * 29) -> None:
+async def restart_reminder_status() -> None:
     """
     param await_time: time in seconds for awaiting
     """
@@ -93,10 +92,9 @@ async def restart_reminder_status(await_time: int = 60 * 29) -> None:
         await asyncio.sleep(await_time)
 
 
-async def check_lost_pray(bot: Bot, await_time: int = 60) -> None:
+async def check_lost_pray(bot: Bot) -> None:
     """
     :param bot: bot
-    :param await_time: time in seconds for awaiting
     """
     while True:
         time_now = timedelta(

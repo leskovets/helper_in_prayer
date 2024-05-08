@@ -20,7 +20,7 @@ async def start(message: Message, state: FSMContext) -> None:
         await message.answer('У тебя не в включены напоминания. Включить?', reply_markup=yes_no_keyboard())
         await state.update_data(is_reminder=True)
     else:
-        text = 'Хочешь отключить напоминание?'
+        text = 'Хочешь отключить напоминание??'
         await message.answer(text, reply_markup=yes_no_keyboard())
         await state.update_data(is_reminder=False)
 

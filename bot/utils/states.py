@@ -3,8 +3,7 @@ from aiogram.fsm.state import StatesGroup, State
 
 class Start(StatesGroup):
     first_name = State()
-    is_reminders = State()
-    is_plan = State()
+    rename = State()
 
 
 class RegUser(StatesGroup):

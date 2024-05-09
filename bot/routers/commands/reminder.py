@@ -1,6 +1,6 @@
 from datetime import time
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.fsm.context import FSMContext
@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from bot.keyboards.keyboards.yes_no import yes_no_keyboard
 from bot.utils.states import Reminder
 from db.plna_db_handl import add_new_plan
-from db.user_db_handl import check_reminder_by_chat_id, update_user_reminder_by_chat_id
+from db.user_db_handl import update_user_reminder_by_chat_id, get_user_by_chat_id
 
 router = Router()
 
@@ -16,40 +16,48 @@ router = Router()
 @router.message(Command('reminder'))
 async def start(message: Message, state: FSMContext) -> None:
 
-    if not check_reminder_by_chat_id(message.chat.id):
-        await message.answer('У тебя не в включены напоминания. Включить?', reply_markup=yes_no_keyboard())
-        await state.update_data(is_reminder=True)
+    reminder_is_on = get_user_by_chat_id(message.chat.id).is_reminders
+    if not reminder_is_on:
+        text = 'Напоминания отключены. Включить?'
+        await state.set_state(Reminder.reminder_on)
+
     else:
-        text = 'Хочешь отключить напоминание??'
-        await message.answer(text, reply_markup=yes_no_keyboard())
-        await state.update_data(is_reminder=False)
+        text = 'Напоминания включены. Хочешь отключить?'
+        await state.set_state(Reminder.reminder_off)
 
-    await state.set_state(Reminder.reminder_on)
+    await message.answer(text, reply_markup=yes_no_keyboard())
 
 
-@router.message(Reminder.reminder_on)
-async def is_reminder_(message: Message, state: FSMContext):
-    try:
-        if message.text not in ('Да', 'Нет'):
-            raise ValueError()
-    except ValueError:
-        text = 'Нажми на кнопку!'
-        await message.answer(text, reply_markup=yes_no_keyboard())
-        return
-
-    is_reminder = await state.get_data()
-
-    if is_reminder['is_reminder'] is False:
-
+@router.message(Reminder.reminder_off, F.text.in_(('Да', 'Нет')))
+async def is_reminder_on(message: Message, state: FSMContext):
+    if message.text == 'Да':
         text = 'Напоминания отключены!'
         update_user_reminder_by_chat_id(message.chat.id, False)
         await message.answer(text, reply_markup=ReplyKeyboardRemove())
         await state.clear()
         return
-
-    update_user_reminder_by_chat_id(message.chat.id, True)
-    await message.answer('Введи время ЧЧ:ММ в котором планируешь молиться', reply_markup=ReplyKeyboardRemove())
+    text = 'Введи время ЧЧ:ММ в котором планируешь молиться'
+    await message.answer(text, reply_markup=ReplyKeyboardRemove())
     await state.set_state(Reminder.plan)
+
+
+@router.message(Reminder.reminder_on,  F.text.in_(('Да', 'Нет')))
+async def is_reminder_on(message: Message, state: FSMContext):
+    if message.text == 'Нет':
+        await message.answer('Ок!', reply_markup=ReplyKeyboardRemove())
+        await state.clear()
+        return
+    update_user_reminder_by_chat_id(message.chat.id, True)
+    text = 'Введи время ЧЧ:ММ в котором планируешь молиться'
+    await message.answer(text, reply_markup=ReplyKeyboardRemove())
+    await state.set_state(Reminder.plan)
+
+
+@router.message(Reminder.reminder_off)
+@router.message(Reminder.reminder_on)
+async def is_reminder_on(message: Message):
+    text = 'Нажми на кнопку!'
+    await message.answer(text, reply_markup=yes_no_keyboard())
 
 
 @router.message(Reminder.plan)
@@ -60,12 +68,12 @@ async def plan(message: Message, state: FSMContext):
             minute=int(message.text.split(':')[1])
         )
     except (IndexError, ValueError):
-        await message.answer('Введи время ЧЧ:ММ', reply_markup=ReplyKeyboardRemove())
+        await message.answer('Введи время в формате ЧЧ:ММ', reply_markup=ReplyKeyboardRemove())
         return
 
     for day in range(7):
         add_new_plan(message.chat.id, 'pray', day, start_time)
 
-    text = 'Время добавлено'
+    text = 'Отлично теперь я смогу напомнить тебе, когда у тебя молитва'
     await message.answer(text, reply_markup=ReplyKeyboardRemove())
     await state.clear()

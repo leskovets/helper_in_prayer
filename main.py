@@ -23,7 +23,7 @@ async def main() -> None:
     await bot.set_my_commands([
         BotCommand(command='help', description='Помощь'),
         BotCommand(command='reminder', description='Напоминания'),
-        BotCommand(command='story', description='История молитв'),
+        BotCommand(command='history', description='История молитв'),
 
     ])
     dp = Dispatcher()

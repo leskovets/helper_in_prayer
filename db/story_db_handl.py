@@ -39,9 +39,9 @@ def get_reports_lost_pray_last_week() -> list[Story]:
 
 
 def get_reports_last_month_by_chat_id(chat_id: int) -> list[Story]:
-    week_ago = date.today() - timedelta(days=30)
+    month_ago = date.today() - timedelta(days=30)
     story = Story.select().where(
         (Story.chat_id == chat_id) &
-        (Story.date >= week_ago)
+        (Story.date >= month_ago)
     )
     return story

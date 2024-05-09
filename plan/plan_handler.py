@@ -67,7 +67,7 @@ async def check_pray(bot: Bot) -> None:
                 )
 
             # await = 16h
-            await_time = 60 * 60 * 16
+            await_time = 60 * 60 * 21
 
         await asyncio.sleep(await_time)
 
@@ -104,7 +104,7 @@ async def check_lost_pray(bot: Bot) -> None:
 
         await_time = 60 * 15
 
-        if timedelta(hours=8, minutes=0) < time_now:
+        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=21, minutes=00):
             story: list[Story] = get_reports_lost_pray_last_week()
             users = Counter()
             for lost_day in story:
@@ -121,6 +121,6 @@ async def check_lost_pray(bot: Bot) -> None:
                 await bot.send_message(chat_id, text)
 
             # await = 16 hours
-            await_time = 60 * 60 * 16
+            await_time = 60 * 60 * 21
 
         await asyncio.sleep(await_time)

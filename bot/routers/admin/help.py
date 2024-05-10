@@ -7,13 +7,12 @@ from db.user_db_handl import get_user_by_chat_id
 router = Router()
 
 
-@router.message(Command('admin_help'))
+@router.message(Command('a_help'))
 async def admin_help(message: Message, ) -> None:
-
     if not get_user_by_chat_id(message.chat.id).admin:
         return
 
-    text = '/users\n' \
-           '/bad_user\n' \
-           '/set_users\n'
+    text = '/admin\n' \
+           '/\n' \
+           '/\n'
     await message.answer(text)

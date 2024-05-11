@@ -23,7 +23,7 @@ def add_new_plan(chat_id: int, type_plan: str, day: int, start_time: datetime.ti
 
 def get_immediate_plans() -> list:
     start_time = datetime.now().time()
-    end_time = timedelta(hours=start_time.hour, minutes=start_time.minute) + timedelta(hours=0, minutes=15)
+    end_time = timedelta(hours=start_time.hour, minutes=start_time.minute) + timedelta(hours=0, minutes=5)
     day = datetime.now().weekday()
     users = Plan.select().where(
         (Plan.day == day) &

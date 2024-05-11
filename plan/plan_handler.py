@@ -4,10 +4,9 @@ from collections import Counter
 
 from aiogram import Bot
 
-from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false
+from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_id
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
-from db.user_db_handl import get_users
-from db.models import Story
+from db.user_db_handl import get_users, get_user_by_chat_id
 from bot.utils.send_message import prayer_reminder
 from bot.keyboards.inline_keyboards.is_pray import is_pray_markup
 
@@ -18,9 +17,13 @@ async def check_reminders(bot: Bot, await_time: int = 60) -> None:
     :param await_time: time in seconds for awaiting
     """
     while True:
-        plans = get_immediate_plans('pray')
+        plans = get_immediate_plans()
         for plan in plans:
-            await prayer_reminder(plan.chat_id, bot, plan.time)
+            if get_user_by_chat_id(plan.chat_id).is_reminders:
+                await prayer_reminder(plan.chat_id, bot, plan.time, plan.id)
+
+                if plan.type_plan == "postponement":
+                    delete_plan_by_id(plan.id)
 
         await asyncio.sleep(await_time)
 
@@ -105,7 +108,7 @@ async def check_lost_pray(bot: Bot) -> None:
         await_time = 60 * 15
 
         if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=21, minutes=00):
-            story: list[Story] = get_reports_lost_pray_last_week()
+            story = get_reports_lost_pray_last_week()
             users = Counter()
             for lost_day in story:
                 users[lost_day.chat_id] += 1

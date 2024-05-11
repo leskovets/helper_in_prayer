@@ -21,7 +21,7 @@ def add_new_plan(chat_id: int, type_plan: str, day: int, start_time: datetime.ti
     db_plan_handler.debug(f"{chat_id} было обновлён план")
 
 
-def get_immediate_plans(type_plan: str) -> list:
+def get_immediate_plans() -> list:
     start_time = datetime.now().time()
     end_time = timedelta(hours=start_time.hour, minutes=start_time.minute) + timedelta(hours=0, minutes=15)
     day = datetime.now().weekday()
@@ -29,16 +29,15 @@ def get_immediate_plans(type_plan: str) -> list:
         (Plan.day == day) &
         (Plan.time >= start_time) &
         (Plan.time <= end_time) &
-        (Plan.total_alarm == 0) &
-        (Plan.type_plan == type_plan)
+        (Plan.total_alarm == 0)
     )
     users = [user for user in users]
+
     plan = Plan.update(total_alarm=1).where(
         (Plan.day == day) &
         (Plan.time >= start_time) &
         (Plan.time <= end_time) &
-        (Plan.total_alarm == 0) &
-        (Plan.type_plan == type_plan)
+        (Plan.total_alarm == 0)
     )
     plan.execute()
     return users
@@ -47,3 +46,21 @@ def get_immediate_plans(type_plan: str) -> list:
 def update_all_total_alarm_to_false() -> None:
     plan = Plan.update(total_alarm=False)
     plan.execute()
+
+
+def delete_plan_by_id(id_plan: int) -> None:
+    Plan.delete().where(Plan.id == id_plan)
+
+
+def get_plan_by_id(id_plan: int) -> Plan:
+    return Plan.get(Plan.id == id_plan)
+
+
+def add_postponement_plan_by_chat_id(chat_id: int, day: int, start_time: datetime.time) -> None:
+    Plan.create(chat_id=chat_id,
+                type_plan="postponement",
+                day=day,
+                time=start_time
+                )
+
+

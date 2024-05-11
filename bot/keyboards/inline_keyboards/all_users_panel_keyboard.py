@@ -75,5 +75,5 @@ def build_all_users_keyboard(page: int) -> InlineKeyboardMarkup:
                 total_pages=total_pages
             ).pack()
         )
-    builder.adjust(1)
+    builder.adjust(1, 2)
     return builder.as_markup()

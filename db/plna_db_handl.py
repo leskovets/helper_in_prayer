@@ -49,7 +49,11 @@ def update_all_total_alarm_to_false() -> None:
 
 
 def delete_plan_by_id(id_plan: int) -> None:
-    Plan.delete().where(Plan.id == id_plan)
+    Plan.delete().where(Plan.id == id_plan).execute()
+
+
+def delete_plan_by_type(type_plan: str) -> None:
+    Plan.delete().where(Plan.type_plan == type_plan).execute()
 
 
 def get_plan_by_id(id_plan: int) -> Plan:

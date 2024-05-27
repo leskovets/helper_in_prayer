@@ -4,7 +4,8 @@ from collections import Counter
 
 from aiogram import Bot
 
-from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_id
+from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_id, \
+    delete_plan_by_type
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
 from db.user_db_handl import get_users, get_user_by_chat_id
 from bot.utils.send_message import prayer_reminder
@@ -21,9 +22,6 @@ async def check_reminders(bot: Bot, await_time: int = 60) -> None:
         for plan in plans:
             if get_user_by_chat_id(plan.chat_id).is_reminders:
                 await prayer_reminder(plan.chat_id, bot, plan.time, plan.id)
-
-                if plan.type_plan == "postponement":
-                    delete_plan_by_id(plan.id)
 
         await asyncio.sleep(await_time)
 
@@ -87,7 +85,9 @@ async def restart_reminder_status() -> None:
         week_day_now = datetime.weekday(datetime.now())
 
         await_time = 60 * 15
-        if (timedelta(hours=0, minutes=00) < time_now) and week_day_now == 0:
+        if (timedelta(hours=0, minutes=00) < time_now < timedelta(hours=1, minutes=00)) and week_day_now == 0:
+
+            delete_plan_by_type("postponement")
             update_all_total_alarm_to_false()
 
             await_time = 60 * 60 * 24 * 6
@@ -118,7 +118,11 @@ async def check_lost_pray(bot: Bot) -> None:
                 elif lost_day > 2:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву\n' \
                            f'о пропуска будет сообщено лидеру'
-                    await bot.send_message(241097915, f'{chat_id} не молился')
+
+                    user = get_user_by_chat_id(chat_id)
+                    name = user.user_name if user.user_name is not None else user.first_name
+                    admin_chat = 241097915 if user.admin is None else user.admin
+                    await bot.send_message(admin_chat, f'{name} не молился {lost_day} раз')
                 else:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
                 await bot.send_message(chat_id, text)

@@ -25,18 +25,18 @@ async def handel_postponement_pray(call: CallbackQuery, callback_data: Postponem
     PostponementPrayCbData.filter(F.action == PostponementPrayActions.time)
 )
 async def handel_postponement_pray(call: CallbackQuery, callback_data: PostponementPrayCbData):
-    message = f'Напоминание сдвинуто на {callback_data.time} минут'
+
+    time_now = datetime.datetime.now()
+    postponement_time = time_now + datetime.timedelta(minutes=callback_data.time)
+
+    message = f'Напоминание сдвинуто на {postponement_time.hour}:{postponement_time.minute}'
     await call.answer(message)
     await call.message.delete()
 
-    first_plan = get_plan_by_id(callback_data.plan_id)
-
     add_postponement_plan_by_chat_id(
         chat_id=callback_data.chat_id,
-        day=first_plan.day,
-        start_time=datetime.timedelta(
-            hours=first_plan.time.hour, minutes=first_plan.time.minute
-        ) + datetime.timedelta(minutes=callback_data.time)
+        day=postponement_time.weekday(),
+        start_time=datetime.timedelta(hours=postponement_time.hour, minutes=postponement_time.minute)
     )
 
 

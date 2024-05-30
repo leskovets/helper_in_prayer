@@ -52,7 +52,7 @@ async def check_pray(bot: Bot) -> None:
         )
 
         await_time = 60 * 15
-        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=22, minutes=00):
+        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=8, minutes=20):
 
             yesterday = date.today() - timedelta(days=1)
             yesterday_date = yesterday.strftime("%d ")
@@ -67,8 +67,7 @@ async def check_pray(bot: Bot) -> None:
                     reply_markup=is_pray_markup(yesterday.strftime('%d %m %Y'))
                 )
 
-            # await = 16h
-            await_time = 60 * 60 * 21
+            await_time = 60 * 60 * 23
 
         await asyncio.sleep(await_time)
 
@@ -127,7 +126,6 @@ async def check_lost_pray(bot: Bot) -> None:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
                 await bot.send_message(chat_id, text)
 
-            # await = 16 hours
-            await_time = 60 * 60 * 21
+            await_time = 60 * 60 * 23
 
         await asyncio.sleep(await_time)

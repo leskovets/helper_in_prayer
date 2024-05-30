@@ -33,9 +33,11 @@ async def start(message: Message, ) -> None:
     }
 
     story: list[Story] = get_reports_last_month_by_chat_id(message.chat.id)
+    text = ''
     for day in story:
         pray_date = date(month=day.date.month, day=day.date.day, year=day.date.year)
         pray_day = pray_date.strftime("%d")
         pray_month = months[pray_date.strftime("%m")]
-        text = f'{pray_day} {pray_month} - {pray[day.is_pray]}'
-        await message.answer(text)
+        text += f'{pray_day} {pray_month} - {pray[day.is_pray]}\n'
+
+    await message.answer(text)

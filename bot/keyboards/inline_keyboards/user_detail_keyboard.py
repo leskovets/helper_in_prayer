@@ -13,6 +13,7 @@ class UserDetailActions(IntEnum):
     delete = auto()
     update = auto()
     archive = auto()
+    history = auto()
 
 
 class UserDetailCbData(CallbackData, prefix='users_panel'):
@@ -35,6 +36,15 @@ def build_user_detail_keyboard(page: int, total_pages: int, chat_id: int, name: 
     )
     builder.button(
         text='Детали',
+        callback_data=UserDetailCbData(
+            action=UserDetailActions.detail,
+            page=page,
+            chat_id=chat_id,
+            name=name
+        ).pack()
+    )
+    builder.button(
+        text='История',
         callback_data=UserDetailCbData(
             action=UserDetailActions.detail,
             page=page,

@@ -52,7 +52,7 @@ async def check_pray(bot: Bot) -> None:
         )
 
         await_time = 60 * 15
-        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=10, minutes=00):
+        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=22, minutes=00):
 
             yesterday = date.today() - timedelta(days=1)
             yesterday_date = yesterday.strftime("%d ")
@@ -107,7 +107,7 @@ async def check_lost_pray(bot: Bot) -> None:
 
         await_time = 60 * 15
 
-        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=21, minutes=00):
+        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=19, minutes=30):
             story = get_reports_lost_pray_last_week()
             users = Counter()
             for lost_day in story:
@@ -120,7 +120,7 @@ async def check_lost_pray(bot: Bot) -> None:
                            f'о пропуска будет сообщено лидеру'
 
                     user = get_user_by_chat_id(chat_id)
-                    name = user.user_name if user.user_name is not None else user.first_name
+                    name = ("@" + user.user_name) if user.user_name is not None else user.first_name
                     admin_chat = 241097915 if user.admin is None else user.admin
                     await bot.send_message(admin_chat, f'{name} не молился {lost_day} раз')
                 else:

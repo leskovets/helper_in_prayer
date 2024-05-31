@@ -11,7 +11,7 @@ router = Router()
 
 
 @router.message(Command('history'))
-async def start(message: Message, ) -> None:
+async def history(message: Message, ) -> None:
     pray = {
         1: 'молился',
         0: 'не молился'

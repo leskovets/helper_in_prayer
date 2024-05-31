@@ -18,8 +18,10 @@ class UserDetailActions(IntEnum):
 
 class UserDetailCbData(CallbackData, prefix='users_panel'):
     action: UserDetailActions
-    name: str
+    page: int
+    total_pages: int
     chat_id: int
+    name: str
 
 
 def build_user_detail_keyboard(page: int, total_pages: int, chat_id: int, name: str) -> InlineKeyboardMarkup:
@@ -40,16 +42,18 @@ def build_user_detail_keyboard(page: int, total_pages: int, chat_id: int, name: 
             action=UserDetailActions.detail,
             page=page,
             chat_id=chat_id,
-            name=name
+            name=name,
+            total_pages=total_pages
         ).pack()
     )
     builder.button(
         text='История',
         callback_data=UserDetailCbData(
-            action=UserDetailActions.detail,
+            action=UserDetailActions.history,
             page=page,
             chat_id=chat_id,
-            name=name
+            name=name,
+            total_pages=total_pages
         ).pack()
     )
     builder.button(
@@ -58,7 +62,8 @@ def build_user_detail_keyboard(page: int, total_pages: int, chat_id: int, name: 
             action=UserDetailActions.update,
             page=page,
             chat_id=chat_id,
-            name=name
+            name=name,
+            total_pages=total_pages
         ).pack()
     )
     builder.button(
@@ -67,7 +72,8 @@ def build_user_detail_keyboard(page: int, total_pages: int, chat_id: int, name: 
             action=UserDetailActions.archive,
             page=page,
             chat_id=chat_id,
-            name=name
+            name=name,
+            total_pages=total_pages
         ).pack()
     )
     builder.button(
@@ -76,7 +82,8 @@ def build_user_detail_keyboard(page: int, total_pages: int, chat_id: int, name: 
             action=UserDetailActions.delete,
             page=page,
             chat_id=chat_id,
-            name=name
+            name=name,
+            total_pages=total_pages
         ).pack()
     )
 

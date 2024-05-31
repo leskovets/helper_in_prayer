@@ -120,8 +120,8 @@ async def check_lost_pray(bot: Bot) -> None:
 
                     user = get_user_by_chat_id(chat_id)
                     name = ("@" + user.user_name) if user.user_name is not None else user.first_name
-                    admin_chat = 241097915 if user.admin is None else user.admin
-                    await bot.send_message(admin_chat, f'{name} не молился {lost_day} раз')
+                    lider_chat = 241097915 if user.lieder is None else user.lieder
+                    await bot.send_message(lider_chat, f'{name} не молился {lost_day} раз')
                 else:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
                 await bot.send_message(chat_id, text)

@@ -3,9 +3,9 @@ from datetime import date
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
-from bot.keyboards.inline_keyboards.user_detail_keyboard import UserDetailActions, \
-    UserDetailCbData
-from bot.routers.callback_handlers.uesr_history_keyboard import build_user_history_keyboard
+from bot.keyboards.inline_keyboards.user_delete_keyboard import build_user_delete_keyboard
+from bot.keyboards.inline_keyboards.user_detail_keyboard import UserDetailActions, UserDetailCbData
+from bot.keyboards.inline_keyboards.uesr_history_keyboard import build_user_history_keyboard
 from db.story_db_handl import get_reports_last_month_by_chat_id
 
 from db.models import Story
@@ -49,6 +49,22 @@ async def handel_user_detail_history(call: CallbackQuery, callback_data: UserDet
     await call.message.edit_text(
         text=text,
         reply_markup=build_user_history_keyboard(
+            page=callback_data.page,
+            total_pages=callback_data.total_pages,
+            chat_id=callback_data.chat_id,
+            name=callback_data.name)
+        )
+
+
+@router.callback_query(
+    UserDetailCbData.filter(F.action == UserDetailActions.delete)
+)
+async def handel_user_delete(call: CallbackQuery, callback_data: UserDetailCbData):
+
+    text = 'Удалить пользователя?'
+    await call.message.edit_text(
+        text=text,
+        reply_markup=build_user_delete_keyboard(
             page=callback_data.page,
             total_pages=callback_data.total_pages,
             chat_id=callback_data.chat_id,

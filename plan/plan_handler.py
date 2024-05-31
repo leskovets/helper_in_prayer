@@ -4,8 +4,7 @@ from collections import Counter
 
 from aiogram import Bot
 
-from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_id, \
-    delete_plan_by_type
+from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_type
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
 from db.user_db_handl import get_users, get_user_by_chat_id
 from bot.utils.send_message import prayer_reminder
@@ -120,8 +119,8 @@ async def check_lost_pray(bot: Bot) -> None:
 
                     user = get_user_by_chat_id(chat_id)
                     name = ("@" + user.user_name) if user.user_name is not None else user.first_name
-                    lider_chat = 241097915 if user.lieder is None else user.lieder
-                    await bot.send_message(lider_chat, f'{name} не молился {lost_day} раз')
+                    lieder_chat = 241097915 if user.lieder is None else user.lieder
+                    await bot.send_message(lieder_chat, f'{name} не молился {lost_day} раз')
                 else:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
                 await bot.send_message(chat_id, text)

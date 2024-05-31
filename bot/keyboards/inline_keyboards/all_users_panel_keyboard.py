@@ -34,7 +34,7 @@ def build_all_users_keyboard(page: int) -> InlineKeyboardMarkup:
     users = get_users()
 
     total_users = len(users)
-    total_users_in_page = 10
+    total_users_in_page = 8
     total_pages = total_users // total_users_in_page + 0 if total_users % total_users_in_page == 0 else 1
 
     start = (page - 1) * total_users_in_page

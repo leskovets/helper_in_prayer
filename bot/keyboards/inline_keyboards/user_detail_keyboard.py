@@ -11,12 +11,13 @@ class UserDetailActions(IntEnum):
     root = auto()
     detail = auto()
     delete = auto()
+    delete_yes = auto()
     update = auto()
     archive = auto()
     history = auto()
 
 
-class UserDetailCbData(CallbackData, prefix='users_panel'):
+class UserDetailCbData(CallbackData, prefix='user_detail'):
     action: UserDetailActions
     page: int
     total_pages: int

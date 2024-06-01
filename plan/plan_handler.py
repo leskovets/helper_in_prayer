@@ -108,7 +108,7 @@ async def check_lost_pray(bot: Bot) -> None:
 
         await_time = 60 * 15
 
-        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=19, minutes=30):
+        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=22, minutes=30):
             story = get_reports_lost_pray_last_week()
             users = Counter()
             for lost_day in story:
@@ -126,7 +126,10 @@ async def check_lost_pray(bot: Bot) -> None:
                     await bot.send_message(lieder_chat, f'{name} не молился {lost_day} раз')
                 else:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
-                await bot.send_message(chat_id, text)
+                try:
+                    await bot.send_message(chat_id, text)
+                except TelegramBadRequest:
+                    await bot.send_message(241097915, f'{chat_id} заблокировал чат')
 
             await_time = 60 * 60 * 23
 

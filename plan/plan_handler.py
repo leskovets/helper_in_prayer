@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 from collections import Counter
 
 from aiogram import Bot
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.exceptions import TelegramBadRequest, AiogramError
 
 from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_type
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
@@ -66,8 +66,8 @@ async def check_pray(bot: Bot) -> None:
                         f'Помолился ли ты {yesterday_date}?',
                         reply_markup=is_pray_markup(yesterday.strftime('%d %m %Y'))
                     )
-                except TelegramBadRequest:
-                    await bot.send_message(241097915, f'{user.first_name} заблокировал чат')
+                except AiogramError as e:
+                    await bot.send_message(241097915, f'{user.first_name} err: {e}')
 
             await_time = 60 * 60 * 23
 
@@ -107,12 +107,13 @@ async def check_lost_pray(bot: Bot) -> None:
         )
 
         await_time = 60 * 15
-
         if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=22, minutes=30):
             story = get_reports_lost_pray_last_week()
             users = Counter()
+
             for lost_day in story:
                 users[lost_day.chat_id] += 1
+
             for chat_id, lost_day in users.most_common():
                 if lost_day < 2:
                     continue
@@ -122,14 +123,18 @@ async def check_lost_pray(bot: Bot) -> None:
 
                     user = get_user_by_chat_id(chat_id)
                     name = ("@" + user.user_name) if user.user_name is not None else user.first_name
+
                     lieder_chat = 241097915 if user.lieder is None else user.lieder
-                    await bot.send_message(lieder_chat, f'{name} не молился {lost_day} раз')
+                    try:
+                        await bot.send_message(lieder_chat, f'{name} не молился {lost_day} раз')
+                    except AiogramError as e:
+                        await bot.send_message(241097915, f'{user.first_name} err: {e}')
                 else:
                     text = f'За последние 7 дней ты пропустил {lost_day} раз молитву'
                 try:
                     await bot.send_message(chat_id, text)
-                except TelegramBadRequest:
-                    await bot.send_message(241097915, f'{chat_id} заблокировал чат')
+                except AiogramError as e:
+                    await bot.send_message(241097915, f'{chat_id} err: {e}')
 
             await_time = 60 * 60 * 23
 

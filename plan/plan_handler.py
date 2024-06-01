@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from collections import Counter
 
 from aiogram import Bot
+from aiogram.exceptions import TelegramBadRequest
 
 from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_type
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week
@@ -51,20 +52,22 @@ async def check_pray(bot: Bot) -> None:
         )
 
         await_time = 60 * 15
-        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=8, minutes=20):
+        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=18, minutes=20):
 
             yesterday = date.today() - timedelta(days=1)
             yesterday_date = yesterday.strftime("%d ")
             yesterday_date += months[yesterday.strftime("%m")]
             users = get_users()
-
             for user in users:
                 add_report_pray(user.chat_id, False, yesterday)
-                await bot.send_message(
-                    user.chat_id,
-                    f'Помолился ли ты {yesterday_date}?',
-                    reply_markup=is_pray_markup(yesterday.strftime('%d %m %Y'))
-                )
+                try:
+                    await bot.send_message(
+                        user.chat_id,
+                        f'Помолился ли ты {yesterday_date}?',
+                        reply_markup=is_pray_markup(yesterday.strftime('%d %m %Y'))
+                    )
+                except TelegramBadRequest:
+                    await bot.send_message(241097915, f'{user.first_name} заблокировал чат')
 
             await_time = 60 * 60 * 23
 

@@ -19,7 +19,7 @@ def update_user_first_name(chat_id: int, first_name: str) -> None:
 
 def get_users() -> list[User]:
     users = User.select()
-    return users
+    return [user for user in users]
 
 
 def get_user_by_chat_id(chat_id: int) -> User | None:

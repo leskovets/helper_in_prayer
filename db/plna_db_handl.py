@@ -52,6 +52,10 @@ def delete_plan_by_id(id_plan: int) -> None:
     Plan.delete().where(Plan.id == id_plan).execute()
 
 
+def delete_plan_by_chat_id(chat_id: int) -> None:
+    Plan.delete().where(Plan.chat_id == chat_id).execute()
+
+
 def delete_plan_by_type(type_plan: str) -> None:
     Plan.delete().where(Plan.type_plan == type_plan).execute()
 

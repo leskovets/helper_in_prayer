@@ -3,12 +3,14 @@ from datetime import date
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
+from bot.keyboards.inline_keyboards.admin_panel_keyboard import build_admin_panel_keyboard
 from bot.keyboards.inline_keyboards.user_delete_keyboard import build_user_delete_keyboard
 from bot.keyboards.inline_keyboards.user_detail_keyboard import UserDetailActions, UserDetailCbData
 from bot.keyboards.inline_keyboards.uesr_history_keyboard import build_user_history_keyboard
 from db.story_db_handl import get_reports_last_month_by_chat_id
 
 from db.models import Story
+from db.user_db_handl import del_user_by_chat_id
 
 router = Router(name=__name__)
 
@@ -70,3 +72,11 @@ async def handel_user_delete(call: CallbackQuery, callback_data: UserDetailCbDat
             chat_id=callback_data.chat_id,
             name=callback_data.name)
         )
+
+
+@router.callback_query(
+    UserDetailCbData.filter(F.action == UserDetailActions.delete_yes)
+)
+async def handel_user_delete(call: CallbackQuery, callback_data: UserDetailCbData):
+    del_user_by_chat_id(callback_data.chat_id)
+    await call.message.edit_text(text="Меню администратора:", reply_markup=build_admin_panel_keyboard())

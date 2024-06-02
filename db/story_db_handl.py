@@ -45,3 +45,7 @@ def get_reports_last_month_by_chat_id(chat_id: int) -> list[Story]:
         (Story.date >= month_ago)
     )
     return story
+
+
+def delete_history_by_id(chat_id: int) -> None:
+    Story.delete().where(Story.chat_id == chat_id).execute()

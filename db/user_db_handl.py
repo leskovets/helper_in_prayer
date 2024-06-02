@@ -1,4 +1,6 @@
 from db.models import User
+from db.plna_db_handl import delete_plan_by_id, delete_plan_by_chat_id
+from db.story_db_handl import delete_history_by_id
 
 
 def add_user(chat_id: int, user_name: str,
@@ -30,3 +32,9 @@ def get_user_by_chat_id(chat_id: int) -> User | None:
 def update_user_reminder_by_chat_id(chat_id: int, is_reminders: bool) -> None:
     user = User.update(is_reminders=is_reminders).where(User.chat_id == chat_id)
     user.execute()
+
+
+def del_user_by_chat_id(chat_id: int) -> None:
+    delete_plan_by_chat_id(chat_id)
+    delete_history_by_id(chat_id)
+    User.delete().where(User.chat_id == chat_id).execute()

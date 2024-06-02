@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 from collections import Counter
 
 from aiogram import Bot
-from aiogram.exceptions import TelegramBadRequest, AiogramError
+from aiogram.exceptions import AiogramError
 
 from db.plna_db_handl import get_immediate_plans, update_all_total_alarm_to_false, delete_plan_by_type
 from db.story_db_handl import add_report_pray, get_reports_lost_pray_last_week

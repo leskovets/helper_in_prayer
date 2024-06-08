@@ -11,6 +11,13 @@ router = Router(name=__name__)
 
 
 @router.callback_query(
+    PostponementPrayCbData.filter(F.action == PostponementPrayActions.delete_message)
+)
+async def handel_postponement_pray(call: CallbackQuery, callback_data: PostponementPrayCbData):
+    await call.message.delete()
+
+
+@router.callback_query(
     PostponementPrayCbData.filter(F.action == PostponementPrayActions.postponement)
 )
 async def handel_postponement_pray(call: CallbackQuery, callback_data: PostponementPrayCbData):

@@ -107,7 +107,7 @@ async def check_lost_pray(bot: Bot) -> None:
         )
 
         await_time = 60 * 15
-        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=22, minutes=30):
+        if timedelta(hours=19, minutes=00) < time_now < timedelta(hours=19, minutes=29):
             story = get_reports_lost_pray_last_week()
             users = Counter()
 

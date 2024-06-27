@@ -52,7 +52,7 @@ async def check_pray(bot: Bot) -> None:
         )
 
         await_time = 60 * 15
-        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=10, minutes=20):
+        if timedelta(hours=8, minutes=00) < time_now < timedelta(hours=8, minutes=20):
 
             yesterday = date.today() - timedelta(days=1)
             yesterday_date = yesterday.strftime("%d ")
